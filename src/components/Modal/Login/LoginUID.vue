@@ -1,3 +1,5 @@
+import { ref } from "vue";  
+import { getUserDetail } from "@/api/user";  // 添加这行
 <template>  
   <div class="login-uid">  
     <n-alert type="info" style="margin-bottom: 16px;">  
@@ -32,6 +34,7 @@
   
 <script setup>  
 import { ref } from "vue";  
+import { getUserDetail } from "@/api/user";  
   
 const emit = defineEmits(["setLoginData"]);  
   
@@ -41,26 +44,17 @@ const loading = ref(false);
 // 只允许输入数字  
 const onlyAllowNumber = (value) => !value || /^\d+$/.test(value);  
   
-// 模拟UID验证API调用  
+// 替换模拟函数  
 const verifyUserByUID = async (uid) => {  
-  // 这里应该调用实际的API，暂时模拟  
-  return new Promise((resolve, reject) => {  
-    setTimeout(() => {  
-      if (uid && uid.length >= 6) {  
-        resolve({  
-          code: 200,  
-          profile: {  
-            userId: uid,  
-            nickname: `用户${uid}`,  
-            avatarUrl: "/imgs/icons/favicon.png"  
-          }  
-        });  
-      } else {  
-        reject(new Error("无效的UID"));  
-      }  
-    }, 1000);  
-  });  
+  try {  
+    const result = await getUserDetail(uid);  
+    return result;  
+  } catch (error) {  
+    throw new Error("UID验证失败");  
+  }  
 };  
+  
+// handleLogin 函数保持不变...  
   
 const handleLogin = async () => {  
   if (!uid.value) {  
