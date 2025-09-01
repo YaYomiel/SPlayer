@@ -91,17 +91,15 @@ const setLoginData = async (loginData) => {
     loginModalShow.value = false;  
       
     if (loginData.isUIDLogin) {  
-      // UID登录特殊处理 - 正确设置数据结构  
-      data.userData = {  
-        userId: loginData.profile.userId,  
-        detail: {  
-          profile: loginData.profile  
-        },  
-        subcount: {} // 添加空的订阅信息  
-      };  
-      data.userLoginStatus = true; // 设置为已登录状态  
-      $message.warning("UID验证成功，但部分功能受限");  
-    } else {  
+  // UID登录特殊处理 - 设置完整的用户数据  
+  data.userData = {  
+    userId: loginData.profile.userId,  
+    detail: loginData, // 使用完整的 API 返回数据  
+    subcount: {} // 添加空的订阅信息  
+  };  
+  data.userLoginStatus = true;  
+  $message.warning("UID验证成功，但部分功能受限");  
+} else {  
       // 正常登录流程  
       setCookies(loginData.cookie);  
       await data.setUserProfile();  
