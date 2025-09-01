@@ -82,25 +82,37 @@ const openLoginModal = () => {
 };
 
 // 储存登录信息
-const setLoginData = async (loginData) => {
-  console.log(loginData);
-  if (!loginData) return false;
-  if (loginData.code === 200) {
-    // 关闭登录弹窗
-    loginModalShow.value = false;
-    // 保存 cookie
-    setCookies(loginData.cookie);
-    // 获取用户信息
-    await data.setUserProfile();
-    await data.setDailySongsData();
-    // 签到
-    if (autoSignIn.value) await userSignIn();
-    // 更改状态
-    data.userLoginStatus = true;
-    $message.success("登录成功");
-  } else {
-    $message.error(loginData.msg ?? loginData.message ?? "账号或密码错误，请重试");
-  }
+// 在setLoginData函数中添加UID登录处理  
+const setLoginData = async (loginData) => {  
+  console.log(loginData);  
+  if (!loginData) return false;  
+    
+  if (loginData.code === 200) {  
+    loginModalShow.value = false;  
+      
+    if (loginData.isUIDLogin) {  
+      // UID登录特殊处理 - 正确设置数据结构  
+      data.userData = {  
+        userId: loginData.profile.userId,  
+        detail: {  
+          profile: loginData.profile  
+        },  
+        subcount: {} // 添加空的订阅信息  
+      };  
+      data.userLoginStatus = true; // 设置为已登录状态  
+      $message.warning("UID验证成功，但部分功能受限");  
+    } else {  
+      // 正常登录流程  
+      setCookies(loginData.cookie);  
+      await data.setUserProfile();  
+      await data.setDailySongsData();  
+      if (autoSignIn.value) await userSignIn();  
+      data.userLoginStatus = true;  
+      $message.success("登录成功");  
+    }  
+  } else {  
+    $message.error(loginData.msg ?? loginData.message ?? "验证失败，请重试");  
+  }  
 };
 
 // 刷新登录
