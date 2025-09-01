@@ -48,8 +48,10 @@ const onlyAllowNumber = (value) => !value || /^\d+$/.test(value);
 const verifyUserByUID = async (uid) => {  
   try {  
     const result = await getUserDetail(uid);  
+    console.log("API 返回结果:", result); // 添加调试日志  
     return result;  
   } catch (error) {  
+    console.error("UID验证API调用失败:", error);  
     throw new Error("UID验证失败");  
   }  
 };  
